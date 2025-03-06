@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,7 +78,25 @@ public class SocialMediaController {
 
         @DeleteMapping("/messages/{message_id}")
         public ResponseEntity<Integer> deleteMessageGivenMessageId(@PathVariable int message_id) {
-            int row_deleted = messageService.deleteMessageGivenMessageId(message_id);
-            return ResponseEntity.ok().body(row_deleted);
+            int rowsDeleted = messageService.deleteMessageGivenMessageId(message_id);
+            if (rowsDeleted == 0) {
+                return ResponseEntity.ok().body(null);
+            }
+            return ResponseEntity.ok().body(rowsDeleted);
+        }
+
+        @PatchMapping("/messages/{message_id}")
+        public ResponseEntity<Integer> updateMessage(@PathVariable int message_id, @RequestBody String message_text) {
+            try {
+                messageService.updateMessage(message_id, message_text);
+                return ResponseEntity.ok().body(1);
+            } catch (Exception e) {
+                return ResponseEntity.status(400).body(null);
+            }
+        }
+
+        @GetMapping("/accounts/{account_id}/messages")
+        public ResponseEntity<List<Message>> getMessagesForUserGivenAccountId(@PathVariable int account_id){
+            return ResponseEntity.ok(messageService.getMessagesForUserGivenAccountId(account_id));
         }
 }

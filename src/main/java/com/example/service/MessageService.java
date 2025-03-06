@@ -11,6 +11,8 @@ import com.example.repository.MessageRepository;
 
 import java.util.*;
 
+import javax.transaction.Transactional;
+
 import com.example.repository.AccountRepository;
 
 
@@ -42,11 +44,27 @@ public class MessageService {
         return message;
     }
 
+    @Transactional
     public int deleteMessageGivenMessageId(int messageId){
-        if(messageRepository.getMessageGivenMessageId(messageId) != null){
+        Message message = messageRepository.getMessageGivenMessageId(messageId);
+        if(message != null){
             messageRepository.deleteMessageGivenMessageId(messageId);
             return 1;
         }
         return 0;
+    }
+
+    @Transactional
+    public void updateMessage(int message_id, String message_text){
+        Message message = messageRepository.getMessageGivenMessageId(message_id);
+        if(message == null || message_text.isEmpty() || message_text.length() > 255){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't update message");
+        }
+        messageRepository.updateMessage(message_id, message_text);
+    }
+
+    public List<Message> getMessagesForUserGivenAccountId(int accound_id){
+        List<Message> messages = messageRepository.getMessagesForUserGivenAccountId(accound_id);
+        return messages;
     }
 }
