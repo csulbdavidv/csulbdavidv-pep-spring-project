@@ -57,7 +57,7 @@ public class MessageService {
     @Transactional
     public void updateMessage(int message_id, String message_text){
         Message message = messageRepository.getMessageGivenMessageId(message_id);
-        if(message == null || message_text.isEmpty() || message_text.length() > 255){
+        if(message == null || message_text.isBlank() || message_text.length() > 255){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't update message");
         }
         messageRepository.updateMessage(message_id, message_text);
